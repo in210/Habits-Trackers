@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aesthetic Habit Tracker & Planner</title>
+  <title>Aesthetic Life Planner & Habit Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-main: #F4F7F4;
       --card-bg: #FFFFFF;
-      --accent: #769FCD;
-      --accent-soft: #EAF2F8;
-      --text-main: #2D3748;
-      --text-muted: #718096;
-      --border: #E2E8F0;
+      --accent: #8DA9C4;
+      --accent-soft: #EEF4F8;
+      --text-main: #2B2D42;
+      --border: #D8E2DC;
+      --header-bg: #D8E2DC;
     }
 
     [data-theme="pink"] {
@@ -22,8 +22,8 @@
       --accent: #E5989B;
       --accent-soft: #F9ECEC;
       --text-main: #4A3E3D;
-      --text-muted: #8C7A79;
       --border: #F0E1E1;
+      --header-bg: #F0E1E1;
     }
 
     [data-theme="lavender"] {
@@ -32,8 +32,8 @@
       --accent: #B5A0D0;
       --accent-soft: #F0ECF6;
       --text-main: #3C354A;
-      --text-muted: #7A728A;
       --border: #E6E0F0;
+      --header-bg: #E6E0F0;
     }
 
     [data-theme="beige"] {
@@ -42,244 +42,273 @@
       --accent: #D4A373;
       --accent-soft: #F7EFE5;
       --text-main: #4A3F35;
-      --text-muted: #8C7C6D;
       --border: #ECE3D5;
+      --header-bg: #ECE3D5;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: var(--bg-main); color: var(--text-main); padding: 16px 12px; transition: all 0.3s ease; }
-    .container { max-width: 600px; margin: 0 auto; }
+    body { background-color: var(--bg-main); color: var(--text-main); overflow-x: hidden; transition: all 0.3s; }
 
-    /* HEADER & TEMA */
-    .header { text-align: center; margin-bottom: 20px; }
-    .title { font-family: 'Caveat', cursive; font-size: 2.5rem; color: var(--accent); }
-    .theme-picker { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
-    .theme-btn { border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; background: var(--card-bg); border: 1px solid var(--border); color: var(--text-main); }
-    
-    /* NAV TAB SCHEDULE */
-    .tabs { display: flex; gap: 6px; background: var(--card-bg); padding: 4px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px; overflow-x: auto; }
-    .tab-btn { flex: 1; border: none; background: transparent; padding: 8px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
-    .tab-btn.active { background: var(--accent-soft); color: var(--accent); }
+    /* LANDING SLIDE */
+    #welcome-screen {
+      position: fixed; inset: 0; background: var(--bg-main); z-index: 99;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;
+    }
+    .welcome-title { font-family: 'Caveat', cursive; font-size: 3rem; color: var(--accent); margin-bottom: 10px; }
+    .btn-start { background: var(--accent); color: white; border: none; padding: 12px 32px; border-radius: 25px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-top: 20px; }
 
-    /* CARD STYLING */
-    .card { background: var(--card-bg); border-radius: 16px; padding: 16px; border: 1px solid var(--border); margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-    .card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    /* MAIN APP */
+    .app-container { max-width: 1000px; margin: 0 auto; padding: 12px; display: none; }
+    .header { text-align: center; margin-bottom: 16px; }
 
-    /* INPUT & HABIT LIST */
-    .input-group { display: flex; gap: 8px; margin-bottom: 12px; }
-    .text-input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; outline: none; background: var(--bg-main); font-size: 0.85rem; color: var(--text-main); }
-    .btn-add { background: var(--accent); color: white; border: none; padding: 0 14px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    
-    .habit-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border); }
-    .habit-left { display: flex; align-items: center; gap: 8px; }
-    .completed { text-decoration: line-through; color: var(--text-muted); }
-    
-    /* PROGRESS BAR */
-    .progress-outer { background: var(--accent-soft); height: 10px; border-radius: 5px; overflow: hidden; margin-top: 8px; }
-    .progress-inner { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+    /* THEME SWITCHER */
+    .theme-picker { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
+    .theme-btn { border: none; padding: 6px 12px; border-radius: 15px; font-size: 0.75rem; font-weight: 600; cursor: pointer; background: var(--card-bg); border: 1px solid var(--border); }
 
-    /* GRID & TEXTAREA */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    textarea { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--bg-main); outline: none; font-size: 0.85rem; color: var(--text-main); resize: none; }
+    /* TABLE STYLES (SPREADSHEET LOOK) */
+    .table-wrapper { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+    table { border-collapse: collapse; width: 100%; min-width: 800px; font-size: 0.8rem; }
+    th, td { border: 1px solid var(--border); padding: 8px 6px; text-align: center; }
+    th { background: var(--header-bg); font-weight: 700; }
+    .sticky-col { position: sticky; left: 0; background: var(--card-bg); text-align: left; min-width: 160px; font-weight: 600; z-index: 2; border-right: 2px solid var(--border); }
     
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .chk-box { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
+    /* EVALUATION CARD */
+    .eval-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 16px; margin-bottom: 80px; }
+    .eval-title { font-weight: 700; margin-bottom: 12px; font-size: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+    .eval-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+    .eval-box label { font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 4px; }
+    textarea { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--bg-main); outline: none; font-size: 0.8rem; resize: vertical; }
+
+    /* BOTTOM NAV BAR (MONTHS) */
+    .month-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; overflow-x: auto; padding: 8px; gap: 8px; z-index: 10; justify-content: center; }
+    .month-btn { border: none; background: transparent; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-main); cursor: pointer; white-space: nowrap; }
+    .month-btn.active { background: var(--accent); color: white; }
   </style>
 </head>
 <body>
 
-<div class="container">
-
-  <!-- HEADER -->
-  <div class="header">
-    <h1 class="title">✨ My Aesthetic Planner</h1>
-    <div class="theme-picker">
+  <!-- SLIDE PERTAMA (WELCOME) -->
+  <div id="welcome-screen">
+    <h1 class="welcome-title">✨ Aesthetic Life Planner</h1>
+    <p style="font-size: 0.9rem; color: #666; max-width: 300px;">Track kebiasaan harian, evaluasi bulanan, dan capai impianmu dengan rapi.</p>
+    
+    <div class="theme-picker" style="margin-top: 15px;">
       <button class="theme-btn" onclick="setTheme('sage')">🌿 Sage</button>
       <button class="theme-btn" onclick="setTheme('pink')">🌷 Pink</button>
       <button class="theme-btn" onclick="setTheme('lavender')">🍇 Lavender</button>
       <button class="theme-btn" onclick="setTheme('beige')">☕ Beige</button>
     </div>
+
+    <button class="btn-start" onclick="startApp()">Mulai Planner ✨</button>
   </div>
 
-  <!-- TABS JADWAL -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('harian')">Harian</button>
-    <button class="tab-btn" onclick="switchTab('mingguan')">Mingguan</button>
-    <button class="tab-btn" onclick="switchTab('bulanan')">Bulanan</button>
-  </div>
-
-  <!-- TAB HARIAN -->
-  <div id="tab-harian" class="tab-content active">
+  <!-- DASHBOARD UTAMA -->
+  <div class="app-container" id="app">
     
-    <!-- PROGRESS TRACKER -->
-    <div class="card">
-      <div class="card-title">
-        <span>📊 Target Hari Ini</span>
-        <span id="prog-percent" style="color: var(--accent);">0%</span>
-      </div>
-      <div class="progress-outer">
-        <div class="progress-inner" id="prog-bar"></div>
-      </div>
-    </div>
-
-    <!-- HABIT CHECKLIST -->
-    <div class="card">
-      <div class="card-title">📝 Habit Checklist</div>
-      <div class="input-group">
-        <input type="text" id="habit-input" class="text-input" placeholder="Tambah kebiasaan baru...">
-        <button class="btn-add" onclick="addHabit()">+</button>
-      </div>
-      <div id="habit-list"></div>
-    </div>
-
-    <!-- TRACKER TIDUR & KEUANGAN -->
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">🌙 Sleep Tracker</div>
-        <input type="time" id="sleep-time" class="text-input" style="margin-bottom:6px;" onchange="saveData()">
-        <input type="time" id="wake-time" class="text-input" onchange="saveData()">
-      </div>
-      <div class="card">
-        <div class="card-title">💰 Keuangan</div>
-        <input type="number" id="income" class="text-input" placeholder="Masuk (Rp)" style="margin-bottom:6px;" oninput="calcFinance()">
-        <input type="number" id="expense" class="text-input" placeholder="Keluar (Rp)" oninput="calcFinance()">
-        <div style="font-size: 0.75rem; margin-top: 6px; font-weight: 600;">Sisa: <span id="balance" style="color:var(--accent)">Rp 0</span></div>
+    <div class="header">
+      <h2 style="font-family:'Caveat', cursive; font-size: 2.2rem; color: var(--accent);" id="month-header">Agustus 2026</h2>
+      <div class="theme-picker">
+        <button class="theme-btn" onclick="setTheme('sage')">🌿 Sage</button>
+        <button class="theme-btn" onclick="setTheme('pink')">🌷 Pink</button>
+        <button class="theme-btn" onclick="setTheme('lavender')">🍇 Lavender</button>
+        <button class="theme-btn" onclick="setTheme('beige')">☕ Beige</button>
       </div>
     </div>
 
-    <!-- REFLEKSI HARIAN -->
-    <div class="card">
-      <div class="card-title">💡 Catatan Hari Ini</div>
-      <textarea id="notes" rows="3" placeholder="Tulis cerita atau evaluasi hari ini..." oninput="saveData()"></textarea>
+    <!-- TABEL HABIT UTAMA -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th class="sticky-col">DAILY HABIT</th>
+            <script>
+              for(let i=1; i<=31; i++) {
+                document.write(`<th>${i}</th>`);
+              }
+            </script>
+          </tr>
+        </thead>
+        <tbody id="habit-rows">
+          <!-- Diisi via JS -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="sticky-col" style="text-align: right;">% Success:</td>
+            <script>
+              for(let i=1; i<=31; i++) {
+                document.write(`<td id="pct-${i}">0%</td>`);
+              }
+            </script>
+          </tr>
+          <tr>
+            <td class="sticky-col" style="text-align: right;">Mood/Emoji:</td>
+            <script>
+              for(let i=1; i<=31; i++) {
+                document.write(`<td id="emoji-${i}">😐</td>`);
+              }
+            </script>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- EVALUASI AKHIR BULAN -->
+    <div class="eval-card">
+      <div class="eval-title">📝 Evaluasi Akhir Bulan</div>
+      <div class="eval-grid">
+        <div class="eval-box">
+          <label>1. Habit yang berhasil dibangun:</label>
+          <textarea id="eval-success" rows="3" placeholder="Tulis capaianmu..." oninput="saveData()"></textarea>
+        </div>
+        <div class="eval-box">
+          <label>2. Habit yang gagal / belum konsisten:</label>
+          <textarea id="eval-fail" rows="3" placeholder="Apa tantangannya?..." oninput="saveData()"></textarea>
+        </div>
+        <div class="eval-box">
+          <label>3. Hal yang dapat ditingkatkan:</label>
+          <textarea id="eval-improve" rows="3" placeholder="Langkah perbaikannya..." oninput="saveData()"></textarea>
+        </div>
+        <div class="eval-box">
+          <label>4. Rencana ke depan:</label>
+          <textarea id="eval-plan" rows="3" placeholder="Target bulan depan..." oninput="saveData()"></textarea>
+        </div>
+        <div class="eval-box">
+          <label>5. Reward untuk diri sendiri 🎉:</label>
+          <textarea id="eval-reward" rows="2" placeholder="Hadiah kalau target tercapai..." oninput="saveData()"></textarea>
+        </div>
+      </div>
     </div>
 
   </div>
 
-  <!-- TAB MINGGUAN -->
-  <div id="tab-mingguan" class="tab-content">
-    <div class="card">
-      <div class="card-title">🗓️ Target Mingguan</div>
-      <textarea id="weekly-plan" rows="6" placeholder="Senin: ...&#10;Selasa: ...&#10;Rabu: ..." oninput="saveData()"></textarea>
-    </div>
+  <!-- TAB BULANAN DI BOTTOM BAR -->
+  <div class="month-nav">
+    <button class="month-btn active" onclick="switchMonth('Agustus')">Agustus</button>
+    <button class="month-btn" onclick="switchMonth('September')">September</button>
+    <button class="month-btn" onclick="switchMonth('Oktober')">Oktober</button>
+    <button class="month-btn" onclick="switchMonth('November')">November</button>
+    <button class="month-btn" onclick="switchMonth('Desember')">Desember</button>
   </div>
-
-  <!-- TAB BULANAN -->
-  <div id="tab-bulanan" class="tab-content">
-    <div class="card">
-      <div class="card-title">📌 Monthly Goals</div>
-      <textarea id="monthly-plan" rows="6" placeholder="Fokus utama bulan ini..." oninput="saveData()"></textarea>
-    </div>
-  </div>
-
-</div>
 
 <script>
-  let habits = JSON.parse(localStorage.getItem('my_habits_v2')) || [];
+  const defaultHabits = [
+    "Bangun jam 5 pagi",
+    "Ibadah",
+    "Skincare Pagi",
+    "Minum air 2 liter",
+    "Olahraga min 15 min",
+    "Baca buku min 15 min",
+    "Skincare Malam",
+    "Journaling"
+  ];
 
-  window.onload = function() {
-    renderHabits();
-    loadData();
-    const savedTheme = localStorage.getItem('my_theme_v2');
-    if(savedTheme) setTheme(savedTheme);
-  };
+  let currentMonth = "Agustus";
+  let habitsData = JSON.parse(localStorage.getItem('my_life_planner_v3')) || {};
+
+  function startApp() {
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderTable();
+  }
 
   function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
-    localStorage.setItem('my_theme_v2', theme);
   }
 
-  function switchTab(tabName) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.getElementById(`tab-${tabName}`).classList.add('active');
-  }
-
-  function addHabit() {
-    const input = document.getElementById('habit-input');
-    if (!input.value.trim()) return;
-    habits.push({ id: Date.now(), text: input.value, done: false });
-    input.value = '';
-    renderHabits();
-    saveData();
-  }
-
-  function toggleHabit(id) {
-    const h = habits.find(x => x.id === id);
-    if(h) h.done = !h.done;
-    renderHabits();
-    saveData();
-  }
-
-  function deleteHabit(id) {
-    habits = habits.filter(x => x.id !== id);
-    renderHabits();
-    saveData();
-  }
-
-  function renderHabits() {
-    const list = document.getElementById('habit-list');
-    list.innerHTML = '';
-    habits.forEach(h => {
-      list.innerHTML += `
-        <div class="habit-item">
-          <div class="habit-left">
-            <input type="checkbox" ${h.done ? 'checked' : ''} onchange="toggleHabit(${h.id})">
-            <span class="${h.done ? 'completed' : ''}">${h.text}</span>
-          </div>
-          <button style="border:none; background:transparent; cursor:pointer;" onclick="deleteHabit(${h.id})">❌</button>
-        </div>
-      `;
+  function switchMonth(month) {
+    currentMonth = month;
+    document.getElementById('month-header').innerText = `${month} 2026`;
+    document.querySelectorAll('.month-btn').forEach(b => {
+      b.classList.toggle('active', b.innerText === month);
     });
-    updateProgress();
+    renderTable();
+    loadEvaluations();
   }
 
-  function updateProgress() {
-    if(habits.length === 0) {
-      document.getElementById('prog-bar').style.width = '0%';
-      document.getElementById('prog-percent').innerText = '0%';
-      return;
+  function renderTable() {
+    const tbody = document.getElementById('habit-rows');
+    tbody.innerHTML = '';
+
+    if (!habitsData[currentMonth]) {
+      habitsData[currentMonth] = {};
     }
-    const done = habits.filter(h => h.done).length;
-    const pct = Math.round((done / habits.length) * 100);
-    document.getElementById('prog-bar').style.width = pct + '%';
-    document.getElementById('prog-percent').innerText = pct + '%';
+
+    defaultHabits.forEach((habit, habitIdx) => {
+      let tr = document.createElement('tr');
+      let tdName = document.createElement('td');
+      tdName.className = 'sticky-col';
+      tdName.innerText = habit;
+      tr.appendChild(tdName);
+
+      for (let day = 1; day <= 31; day++) {
+        let td = document.createElement('td');
+        let key = `h_${habitIdx}_d_${day}`;
+        let isChecked = habitsData[currentMonth][key] || false;
+        
+        td.innerHTML = `<input type="checkbox" class="chk-box" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${habitIdx}, ${day})">`;
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    });
+
+    calculateStats();
   }
 
-  function calcFinance() {
-    const inc = parseFloat(document.getElementById('income').value) || 0;
-    const exp = parseFloat(document.getElementById('expense').value) || 0;
-    document.getElementById('balance').innerText = `Rp ${(inc - exp).toLocaleString('id-ID')}`;
+  function toggleCheck(habitIdx, day) {
+    let key = `h_${habitIdx}_d_${day}`;
+    habitsData[currentMonth][key] = !habitsData[currentMonth][key];
     saveData();
+    calculateStats();
+  }
+
+  function calculateStats() {
+    for (let day = 1; day <= 31; day++) {
+      let checkedCount = 0;
+      defaultHabits.forEach((_, habitIdx) => {
+        let key = `h_${habitIdx}_d_${day}`;
+        if (habitsData[currentMonth] && habitsData[currentMonth][key]) {
+          checkedCount++;
+        }
+      });
+
+      let pct = Math.round((checkedCount / defaultHabits.length) * 100);
+      document.getElementById(`pct-${day}`).innerText = pct + '%';
+
+      let emoji = '😐';
+      if (pct >= 80) emoji = '🤩';
+      else if (pct >= 50) emoji = '😊';
+      else if (pct > 0) emoji = '🙁';
+      
+      document.getElementById(`emoji-${day}`).innerText = emoji;
+    }
   }
 
   function saveData() {
-    localStorage.setItem('my_habits_v2', JSON.stringify(habits));
-    const data = {
-      sleep: document.getElementById('sleep-time').value,
-      wake: document.getElementById('wake-time').value,
-      income: document.getElementById('income').value,
-      expense: document.getElementById('expense').value,
-      notes: document.getElementById('notes').value,
-      weekly: document.getElementById('weekly-plan').value,
-      monthly: document.getElementById('monthly-plan').value
+    localStorage.setItem('my_life_planner_v3', JSON.stringify(habitsData));
+    
+    let evalData = JSON.parse(localStorage.getItem('my_evals_v3')) || {};
+    evalData[currentMonth] = {
+      success: document.getElementById('eval-success').value,
+      fail: document.getElementById('eval-fail').value,
+      improve: document.getElementById('eval-improve').value,
+      plan: document.getElementById('eval-plan').value,
+      reward: document.getElementById('eval-reward').value,
     };
-    localStorage.setItem('my_planner_v2', JSON.stringify(data));
+    localStorage.setItem('my_evals_v3', JSON.stringify(evalData));
   }
 
-  function loadData() {
-    const data = JSON.parse(localStorage.getItem('my_planner_v2'));
-    if(!data) return;
-    document.getElementById('sleep-time').value = data.sleep || '';
-    document.getElementById('wake-time').value = data.wake || '';
-    document.getElementById('income').value = data.income || '';
-    document.getElementById('expense').value = data.expense || '';
-    document.getElementById('notes').value = data.notes || '';
-    document.getElementById('weekly-plan').value = data.weekly || '';
-    document.getElementById('monthly-plan').value = data.monthly || '';
-    calcFinance();
+  function loadEvaluations() {
+    let evalData = JSON.parse(localStorage.getItem('my_evals_v3')) || {};
+    let current = evalData[currentMonth] || {};
+    document.getElementById('eval-success').value = current.success || '';
+    document.getElementById('eval-fail').value = current.fail || '';
+    document.getElementById('eval-improve').value = current.improve || '';
+    document.getElementById('eval-plan').value = current.plan || '';
+    document.getElementById('eval-reward').value = current.reward || '';
   }
 </script>
 </body>
-      </html>
+  </html>
   
