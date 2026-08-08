@@ -1,1 +1,458 @@
-# Habits-Trackers
+# Habits-Trackers<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notion-Style Habit Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #F7F9F6;
+      --card-bg: #FFFFFF;
+      --accent: #84A98C;
+      --accent-soft: #E8F0EC;
+      --text-main: #2F3E46;
+      --text-muted: #6B7A82;
+      --border: #E0E7E1;
+    }
+
+    [data-theme="sage"] {
+      --bg-main: #F4F7F4;
+      --card-bg: #FFFFFF;
+      --accent: #769FCD;
+      --accent-soft: #EAF2F8;
+      --text-main: #2D3748;
+      --text-muted: #718096;
+      --border: #E2E8F0;
+    }
+
+    [data-theme="pink"] {
+      --bg-main: #FAF4F5;
+      --card-bg: #FFFFFF;
+      --accent: #E5989B;
+      --accent-soft: #F9ECEC;
+      --text-main: #4A3E3D;
+      --text-muted: #8C7A79;
+      --border: #F0E1E1;
+    }
+
+    [data-theme="lavender"] {
+      --bg-main: #F8F6FA;
+      --card-bg: #FFFFFF;
+      --accent: #B5A0D0;
+      --accent-soft: #F0ECF6;
+      --text-main: #3C354A;
+      --text-muted: #7A728A;
+      --border: #E6E0F0;
+    }
+
+    [data-theme="beige"] {
+      --bg-main: #FBF8F3;
+      --card-bg: #FFFFFF;
+      --accent: #D4A373;
+      --accent-soft: #F7EFE5;
+      --text-main: #4A3F35;
+      --text-muted: #8C7C6D;
+      --border: #ECE3D5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* TAMPILAN PERTAMA: PEMILIHAN TEMPLATE */
+    #page-templates {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .template-card {
+      background: #ffffff;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      transition: all 0.2s ease;
+    }
+
+    .template-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+
+    .color-preview {
+      height: 60px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
+    /* TAMPILAN KEDUA: DASHBOARD UTAMA */
+    #page-dashboard {
+      display: none;
+    }
+
+    .header-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .view-tabs {
+      display: flex;
+      background: var(--card-bg);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* NOTIFIKASI PENGINGAT */
+    .notification-banner {
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* HABIT CHECKLIST */
+    .habit-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .habit-item:last-child { border-bottom: none; }
+
+    .habit-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .habit-checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .completed {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    /* DIAGRAM PROGRESS BAR */
+    .progress-outer {
+      background: var(--accent-soft);
+      height: 12px;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-inner {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    /* GOALS MALAM & REFLEKSI PEMBELAJARAN */
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 0.9rem;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+    }
+
+    /* PENCATATAN KEUANGAN */
+    .finance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .finance-input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-main);
+      outline: none;
+      color: var(--text-main);
+    }
+
+    .btn-change-theme {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- TAMPILAN PERTAMA: PEMILIHAN TEMPLATE WARNA -->
+  <div id="page-templates">
+    <h1 style="font-size: 2rem; margin-bottom: 8px;">Pilih Aesthetic Template</h1>
+    <p style="color: var(--text-muted);">Pilih nuansa warna soft yang paling cocok dengan mood kamu.</p>
+    
+    <div class="template-grid">
+      <div class="template-card" onclick="selectTemplate('sage')">
+        <div class="color-preview" style="background: #84A98C;"></div>
+        <h3>Soft Sage</h3>
+        <p style="font-size: 0.8rem; color: #888; margin-top: 4px;">Ketenangan & Fokus</p>
+      </div>
+
+      <div class="template-card" onclick="selectTemplate('pink')">
+        <div class="color-preview" style="background: #E5989B;"></div>
+        <h3>Dusty Pink</h3>
+        <p style="font-size: 0.8rem; color: #888; margin-top: 4px;">Kehangatan & Kreativitas</p>
+      </div>
+
+      <div class="template-card" onclick="selectTemplate('lavender')">
+        <div class="color-preview" style="background: #B5A0D0;"></div>
+        <h3>Soft Lavender</h3>
+        <p style="font-size: 0.8rem; color: #888; margin-top: 4px;">Inspirasi & Ide</p>
+      </div>
+
+      <div class="template-card" onclick="selectTemplate('beige')">
+        <div class="color-preview" style="background: #D4A373;"></div>
+        <h3>Warm Beige</h3>
+        <p style="font-size: 0.8rem; color: #888; margin-top: 4px;">Minimalis & Nyaman</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAMPILAN KEDUA: DASHBOARD UTAMA -->
+  <div id="page-dashboard">
+    <div class="header-nav">
+      <div>
+        <h2 id="view-title">Schedule Harian</h2>
+        <span style="font-size: 0.85rem; color: var(--text-muted);" id="current-date"></span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="view-tabs">
+          <button class="tab-btn active" onclick="switchView('Harian')">Harian</button>
+          <button class="tab-btn" onclick="switchView('Mingguan')">Mingguan</button>
+          <button class="tab-btn" onclick="switchView('Bulanan')">Bulanan</button>
+          <button class="tab-btn" onclick="switchView('Tahunan')">Tahunan</button>
+        </div>
+        <button class="btn-change-theme" onclick="resetTemplate()">Tema</button>
+      </div>
+    </div>
+
+    <!-- NOTIFIKASI PENGINGAT -->
+    <div class="notification-banner">
+      <span>🔔 <b>Pengingat:</b> <span id="next-task-text">Jadwal berikutnya: Belajar Kode & Review Catatan jam 19:00</span></span>
+    </div>
+
+    <!-- DIAGRAM PROGRESS TARGET -->
+    <div class="card">
+      <div class="card-title">
+        <span>📊 Progress Target</span>
+        <span id="progress-percent" style="margin-left: auto; color: var(--accent);">0%</span>
+      </div>
+      <div class="progress-outer">
+        <div class="progress-inner" id="progress-bar"></div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST HABIT -->
+    <div class="card">
+      <div class="card-title">✨ Habit Checklist</div>
+      <div id="habit-list">
+        <div class="habit-item">
+          <div class="habit-left">
+            <input type="checkbox" class="habit-checkbox" onchange="toggleHabit(this)">
+            <span>Bangun jam 05:00 & Minum Air Putih</span>
+          </div>
+        </div>
+        <div class="habit-item">
+          <div class="habit-left">
+            <input type="checkbox" class="habit-checkbox" onchange="toggleHabit(this)">
+            <span>Membaca Buku / Artikel (15 Menit)</span>
+          </div>
+        </div>
+        <div class="habit-item">
+          <div class="habit-left">
+            <input type="checkbox" class="habit-checkbox" onchange="toggleHabit(this)">
+            <span>Olahraga Ringan / Stretches</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KUESIONER GOALS MALAM & KOTAK REFLEKSI PEMBELAJARAN -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+      <div class="card">
+        <div class="card-title">🌙 Goals Terlaksana (Malam)</div>
+        <textarea placeholder="Tuliskan target-target yang berhasil kamu selesaikan hari ini..."></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💡 Pembelajaran Hari Ini</div>
+        <textarea placeholder="Satu pelajaran atau wawasan baru yang kamu dapatkan hari ini..."></textarea>
+      </div>
+    </div>
+
+    <!-- PENCATATAN KEUANGAN -->
+    <div class="card">
+      <div class="card-title">💰 Keuangan Sederhana</div>
+      <div class="finance-grid">
+        <div>
+          <label style="font-size: 0.8rem; color: var(--text-muted);">Pendapatan (Rp)</label>
+          <input type="number" class="finance-input" id="income" placeholder="0" oninput="calculateFinance()">
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; color: var(--text-muted);">Pengeluaran (Rp)</label>
+          <input type="number" class="finance-input" id="expense" placeholder="0" oninput="calculateFinance()">
+        </div>
+      </div>
+      <div style="margin-top: 12px; font-weight: 600; font-size: 0.9rem;">
+        Sisa Saldo: <span id="balance" style="color: var(--accent);">Rp 0</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // Date Setup
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', options);
+
+  // Switch Template
+  function selectTemplate(theme) {
+    document.body.setAttribute('data-theme', theme);
+    document.getElementById('page-templates').style.display = 'none';
+    document.getElementById('page-dashboard').style.display = 'block';
+  }
+
+  function resetTemplate() {
+    document.getElementById('page-templates').style.display = 'block';
+    document.getElementById('page-dashboard').style.display = 'none';
+  }
+
+  // Switch View Tabs
+  function switchView(viewName) {
+    document.getElementById('view-title').innerText = `Schedule ${viewName}`;
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  // Calculate Progress
+  function toggleHabit(checkbox) {
+    const textSpan = checkbox.nextElementSibling;
+    if (checkbox.checked) {
+      textSpan.classList.add('completed');
+    } else {
+      textSpan.classList.remove('completed');
+    }
+
+    const total = document.querySelectorAll('.habit-checkbox').length;
+    const checked = document.querySelectorAll('.habit-checkbox:checked').length;
+    const percentage = Math.round((checked / total) * 100);
+
+    document.getElementById('progress-bar').style.width = percentage + '%';
+    document.getElementById('progress-percent').innerText = percentage + '%';
+  }
+
+  // Calculate Finance
+  function calculateFinance() {
+    const income = parseFloat(document.getElementById('income').value) || 0;
+    const expense = parseFloat(document.getElementById('expense').value) || 0;
+    const balance = income - expense;
+
+    document.getElementById('balance').innerText = `Rp ${balance.toLocaleString('id-ID')}`;
+  }
+</script>
+
+</body>
+</html>
