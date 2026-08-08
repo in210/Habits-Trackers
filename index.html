@@ -65,14 +65,24 @@
     .theme-picker { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
     .theme-btn { border: none; padding: 6px 12px; border-radius: 15px; font-size: 0.75rem; font-weight: 600; cursor: pointer; background: var(--card-bg); border: 1px solid var(--border); }
 
-    /* TABLE STYLES (SPREADSHEET LOOK) */
-    .table-wrapper { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+    /* INPUT HABIT BARU */
+    .add-habit-card { background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid var(--border); margin-bottom: 12px; display: flex; gap: 8px; }
+    .text-input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; outline: none; background: var(--bg-main); font-size: 0.85rem; }
+    .btn-add { background: var(--accent); color: white; border: none; padding: 0 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+    /* TABLE STYLES */
+    .table-wrapper { overflow-x: auto; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
     table { border-collapse: collapse; width: 100%; min-width: 800px; font-size: 0.8rem; }
     th, td { border: 1px solid var(--border); padding: 8px 6px; text-align: center; }
     th { background: var(--header-bg); font-weight: 700; }
-    .sticky-col { position: sticky; left: 0; background: var(--card-bg); text-align: left; min-width: 160px; font-weight: 600; z-index: 2; border-right: 2px solid var(--border); }
+    .sticky-col { position: sticky; left: 0; background: var(--card-bg); text-align: left; min-width: 180px; font-weight: 600; z-index: 2; border-right: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     
     .chk-box { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+    .btn-del { border: none; background: transparent; color: #e57373; cursor: pointer; font-size: 0.8rem; margin-left: 4px; }
+
+    /* MONEY TRACKER CARD */
+    .money-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 16px; margin-bottom: 16px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
 
     /* EVALUATION CARD */
     .eval-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 16px; margin-bottom: 80px; }
@@ -81,7 +91,7 @@
     .eval-box label { font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 4px; }
     textarea { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--bg-main); outline: none; font-size: 0.8rem; resize: vertical; }
 
-    /* BOTTOM NAV BAR (MONTHS) */
+    /* BOTTOM NAV BAR */
     .month-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; overflow-x: auto; padding: 8px; gap: 8px; z-index: 10; justify-content: center; }
     .month-btn { border: none; background: transparent; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-main); cursor: pointer; white-space: nowrap; }
     .month-btn.active { background: var(--accent); color: white; }
@@ -92,7 +102,7 @@
   <!-- SLIDE PERTAMA (WELCOME) -->
   <div id="welcome-screen">
     <h1 class="welcome-title">✨ Aesthetic Life Planner</h1>
-    <p style="font-size: 0.9rem; color: #666; max-width: 300px;">Track kebiasaan harian, evaluasi bulanan, dan capai impianmu dengan rapi.</p>
+    <p style="font-size: 0.9rem; color: #666; max-width: 300px;">Track kebiasaan harian, keuangan, dan evaluasi bulanan milikmu sendiri.</p>
     
     <div class="theme-picker" style="margin-top: 15px;">
       <button class="theme-btn" onclick="setTheme('sage')">🌿 Sage</button>
@@ -117,12 +127,18 @@
       </div>
     </div>
 
+    <!-- FORM TAMBAH HABIT SENDIRI -->
+    <div class="add-habit-card">
+      <input type="text" id="custom-habit-input" class="text-input" placeholder="Tulis nama kebiasaan baru di sini...">
+      <button class="btn-add" onclick="addCustomHabit()">+ Tambah</button>
+    </div>
+
     <!-- TABEL HABIT UTAMA -->
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th class="sticky-col">DAILY HABIT</th>
+            <th class="sticky-col">DAILY HABITS</th>
             <script>
               for(let i=1; i<=31; i++) {
                 document.write(`<th>${i}</th>`);
@@ -135,7 +151,7 @@
         </tbody>
         <tfoot>
           <tr>
-            <td class="sticky-col" style="text-align: right;">% Success:</td>
+            <td class="sticky-col" style="justify-content: flex-end;">% Success:</td>
             <script>
               for(let i=1; i<=31; i++) {
                 document.write(`<td id="pct-${i}">0%</td>`);
@@ -143,7 +159,7 @@
             </script>
           </tr>
           <tr>
-            <td class="sticky-col" style="text-align: right;">Mood/Emoji:</td>
+            <td class="sticky-col" style="justify-content: flex-end;">Mood:</td>
             <script>
               for(let i=1; i<=31; i++) {
                 document.write(`<td id="emoji-${i}">😐</td>`);
@@ -154,29 +170,47 @@
       </table>
     </div>
 
+    <!-- MONEY TRACKER -->
+    <div class="money-card">
+      <div class="eval-title" style="margin-bottom:0;">💰 Money Tracker Bulanan</div>
+      <div class="grid-2">
+        <div>
+          <label style="font-size:0.75rem; font-weight:600;">Total Pemasukan (Rp):</label>
+          <input type="number" id="income-val" class="text-input" style="width:100%; margin-top:4px;" placeholder="0" oninput="calcMoney()">
+        </div>
+        <div>
+          <label style="font-size:0.75rem; font-weight:600;">Total Pengeluaran (Rp):</label>
+          <input type="number" id="expense-val" class="text-input" style="width:100%; margin-top:4px;" placeholder="0" oninput="calcMoney()">
+        </div>
+      </div>
+      <div style="margin-top:10px; font-weight:700; font-size:0.85rem;">
+        Sisa Saldo: <span id="balance-val" style="color:var(--accent)">Rp 0</span>
+      </div>
+    </div>
+
     <!-- EVALUASI AKHIR BULAN -->
     <div class="eval-card">
       <div class="eval-title">📝 Evaluasi Akhir Bulan</div>
       <div class="eval-grid">
         <div class="eval-box">
           <label>1. Habit yang berhasil dibangun:</label>
-          <textarea id="eval-success" rows="3" placeholder="Tulis capaianmu..." oninput="saveData()"></textarea>
+          <textarea id="eval-success" rows="3" placeholder="Tulis di sini..." oninput="saveData()"></textarea>
         </div>
         <div class="eval-box">
           <label>2. Habit yang gagal / belum konsisten:</label>
-          <textarea id="eval-fail" rows="3" placeholder="Apa tantangannya?..." oninput="saveData()"></textarea>
+          <textarea id="eval-fail" rows="3" placeholder="Tulis di sini..." oninput="saveData()"></textarea>
         </div>
         <div class="eval-box">
           <label>3. Hal yang dapat ditingkatkan:</label>
-          <textarea id="eval-improve" rows="3" placeholder="Langkah perbaikannya..." oninput="saveData()"></textarea>
+          <textarea id="eval-improve" rows="3" placeholder="Tulis di sini..." oninput="saveData()"></textarea>
         </div>
         <div class="eval-box">
           <label>4. Rencana ke depan:</label>
-          <textarea id="eval-plan" rows="3" placeholder="Target bulan depan..." oninput="saveData()"></textarea>
+          <textarea id="eval-plan" rows="3" placeholder="Tulis di sini..." oninput="saveData()"></textarea>
         </div>
         <div class="eval-box">
           <label>5. Reward untuk diri sendiri 🎉:</label>
-          <textarea id="eval-reward" rows="2" placeholder="Hadiah kalau target tercapai..." oninput="saveData()"></textarea>
+          <textarea id="eval-reward" rows="2" placeholder="Tulis di sini..." oninput="saveData()"></textarea>
         </div>
       </div>
     </div>
@@ -193,24 +227,15 @@
   </div>
 
 <script>
-  const defaultHabits = [
-    "Bangun jam 5 pagi",
-    "Ibadah",
-    "Skincare Pagi",
-    "Minum air 2 liter",
-    "Olahraga min 15 min",
-    "Baca buku min 15 min",
-    "Skincare Malam",
-    "Journaling"
-  ];
-
   let currentMonth = "Agustus";
-  let habitsData = JSON.parse(localStorage.getItem('my_life_planner_v3')) || {};
+  let habitsList = JSON.parse(localStorage.getItem('my_custom_habits_v4')) || [];
+  let habitsData = JSON.parse(localStorage.getItem('my_life_planner_v4')) || {};
 
   function startApp() {
     document.getElementById('welcome-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     renderTable();
+    loadEvaluations();
   }
 
   function setTheme(theme) {
@@ -227,6 +252,25 @@
     loadEvaluations();
   }
 
+  function addCustomHabit() {
+    const input = document.getElementById('custom-habit-input');
+    if (!input.value.trim()) return;
+    habitsList.push(input.value.trim());
+    input.value = '';
+    saveHabitsList();
+    renderTable();
+  }
+
+  function deleteHabit(index) {
+    habitsList.splice(index, 1);
+    saveHabitsList();
+    renderTable();
+  }
+
+  function saveHabitsList() {
+    localStorage.setItem('my_custom_habits_v4', JSON.stringify(habitsList));
+  }
+
   function renderTable() {
     const tbody = document.getElementById('habit-rows');
     tbody.innerHTML = '';
@@ -235,11 +279,18 @@
       habitsData[currentMonth] = {};
     }
 
-    defaultHabits.forEach((habit, habitIdx) => {
+    if(habitsList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="32" style="padding:15px; color:#888;">Belum ada habit. Tambahkan di atas! 👆</td></tr>`;
+      calculateStats();
+      return;
+    }
+
+    habitsList.forEach((habitText, habitIdx) => {
       let tr = document.createElement('tr');
+      
       let tdName = document.createElement('td');
       tdName.className = 'sticky-col';
-      tdName.innerText = habit;
+      tdName.innerHTML = `<span>${habitText}</span><button class="btn-del" onclick="deleteHabit(${habitIdx})">❌</button>`;
       tr.appendChild(tdName);
 
       for (let day = 1; day <= 31; day++) {
@@ -265,15 +316,21 @@
 
   function calculateStats() {
     for (let day = 1; day <= 31; day++) {
+      if (habitsList.length === 0) {
+        document.getElementById(`pct-${day}`).innerText = '0%';
+        document.getElementById(`emoji-${day}`).innerText = '😐';
+        continue;
+      }
+
       let checkedCount = 0;
-      defaultHabits.forEach((_, habitIdx) => {
+      habitsList.forEach((_, habitIdx) => {
         let key = `h_${habitIdx}_d_${day}`;
         if (habitsData[currentMonth] && habitsData[currentMonth][key]) {
           checkedCount++;
         }
       });
 
-      let pct = Math.round((checkedCount / defaultHabits.length) * 100);
+      let pct = Math.round((checkedCount / habitsList.length) * 100);
       document.getElementById(`pct-${day}`).innerText = pct + '%';
 
       let emoji = '😐';
@@ -285,30 +342,42 @@
     }
   }
 
+  function calcMoney() {
+    const inc = parseFloat(document.getElementById('income-val').value) || 0;
+    const exp = parseFloat(document.getElementById('expense-val').value) || 0;
+    document.getElementById('balance-val').innerText = `Rp ${(inc - exp).toLocaleString('id-ID')}`;
+    saveData();
+  }
+
   function saveData() {
-    localStorage.setItem('my_life_planner_v3', JSON.stringify(habitsData));
+    localStorage.setItem('my_life_planner_v4', JSON.stringify(habitsData));
     
-    let evalData = JSON.parse(localStorage.getItem('my_evals_v3')) || {};
+    let evalData = JSON.parse(localStorage.getItem('my_evals_v4')) || {};
     evalData[currentMonth] = {
+      income: document.getElementById('income-val').value,
+      expense: document.getElementById('expense-val').value,
       success: document.getElementById('eval-success').value,
       fail: document.getElementById('eval-fail').value,
       improve: document.getElementById('eval-improve').value,
       plan: document.getElementById('eval-plan').value,
       reward: document.getElementById('eval-reward').value,
     };
-    localStorage.setItem('my_evals_v3', JSON.stringify(evalData));
+    localStorage.setItem('my_evals_v4', JSON.stringify(evalData));
   }
 
   function loadEvaluations() {
-    let evalData = JSON.parse(localStorage.getItem('my_evals_v3')) || {};
+    let evalData = JSON.parse(localStorage.getItem('my_evals_v4')) || {};
     let current = evalData[currentMonth] || {};
+    document.getElementById('income-val').value = current.income || '';
+    document.getElementById('expense-val').value = current.expense || '';
     document.getElementById('eval-success').value = current.success || '';
     document.getElementById('eval-fail').value = current.fail || '';
     document.getElementById('eval-improve').value = current.improve || '';
     document.getElementById('eval-plan').value = current.plan || '';
     document.getElementById('eval-reward').value = current.reward || '';
+    calcMoney();
   }
 </script>
 </body>
-  </html>
+          </html>
   
